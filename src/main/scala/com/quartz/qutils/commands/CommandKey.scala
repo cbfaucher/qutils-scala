@@ -8,6 +8,11 @@ package com.quartz.qutils.commands
  * To change this template use File | Settings | File Templates.
  */
 case class CommandKey(keyworkChain: Seq[String]) {
+
+  def shift: CommandKey =
+    if (keyworkChain.size > 0) CommandKey(keyworkChain.dropRight(1))
+    else throw new RuntimeException("Empty key - cannot shift.")
+
   override def toString: String = keyworkChain.mkString(" ")
 }
 

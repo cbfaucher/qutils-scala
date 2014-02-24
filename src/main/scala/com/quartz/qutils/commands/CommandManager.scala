@@ -12,9 +12,7 @@ import CommandKey.FromString
 class CommandManager(commands: Seq[Command]) {
 
   private[this] val commandToCommand: Map[CommandKey, CommandExecutor] = commands.map {
-      cmd => {
-        (cmd.command, cmd)
-      }
+      cmd => (cmd.command, cmd)
     }
     .map {
       case (words, cmd) => (words.toCommandKey, new CommandExecutor(this, cmd))
@@ -30,18 +28,28 @@ class CommandManager(commands: Seq[Command]) {
 
   def execute(commandLine: String) {
 
-    val key: CommandKey = commandLine.toCommandKey
+    val elements = commandLine.toCommandKey.keyworkChain
 
-    commandToCommand.get(key) match {
-      case Some(cmd) => cmd.execute
+    findCommand(CommandKey(elements)) match {
+      case Some( (key, cmd) ) => {
+        //  split args part...
+        val arguments = elements.drop(key.keyworkChain.length)
+
+        cmd.execute(arguments)
+      }
       case None => throw new CommandNotFoundException(commandLine)
     }
+  }
+
+  private[this] def findCommand(key: CommandKey): Option[(CommandKey, CommandExecutor)] = commandToCommand.get(key) match {
+    case Some(cmd) => Some( (key, cmd) )
+    case None => if (key.keyworkChain.length > 2) findCommand(key.shift) else None
   }
 }
 
 private class CommandExecutor(val commandManager: CommandManager, val command: Command) {
-  def execute {
-    command.action(commandManager, command)
+  def execute(arguments: Seq[String]) {
+    command.action(CommandContext(commandManager, command, arguments))
   }
 }
 

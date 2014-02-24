@@ -13,10 +13,10 @@ class CommandManagerSpec extends FlatSpec with Matchers {
 
   it should "return the expected commands" in {
     val manager = new CommandManager(Seq(
-      new Command("load tickers", (mgr, cmd) => { println("load tickers") }, Some("Loads tickers informations") ),
-      new Command("load\texchange", (mgr, cmd) => { println("load exchanges") }),
+      new Command("load tickers", (ctx) => { println("load tickers") }, Some("Loads tickers informations") ),
+      new Command("load\texchange", (ctx) => { println("load exchanges") }),
       //  will trim values
-      new Command("  find  \t  signals  ", (mgr, cmd) => { println("find signals") })
+      new Command("  find  \t  signals  ", (ctx) => { println("find signals") })
     ))
 
     manager.supportedCommands should be( Seq("find signals", "load exchange", "load tickers"))
@@ -27,10 +27,10 @@ class CommandManagerSpec extends FlatSpec with Matchers {
     var marker: Option[String] = None
 
     val manager = new CommandManager(Seq(
-      new Command("load tickers", (mgr, cmd) => sys.error("No call expected"), Some("Loads tickers informations") ),
-      new Command("load\texchange", (mgr, cmd) => { marker = Some("Called!") }  ),
+      new Command("load tickers", (ctx) => sys.error("No call expected"), Some("Loads tickers informations") ),
+      new Command("load\texchange", (ctx) => { marker = Some("Called!") }  ),
       //  will trim values
-      new Command("  find  \t  signals  ", (mgr, cmd) => sys.error("No call expected") )
+      new Command("  find  \t  signals  ", (ctx) => sys.error("No call expected") )
     ))
 
     manager.execute("load exchange")
@@ -40,10 +40,10 @@ class CommandManagerSpec extends FlatSpec with Matchers {
 
   "Executing a non existing command" should "throw an exception" in {
     val manager = new CommandManager(Seq(
-      new Command("load tickers", (mgr, cmd) => { println("load tickers") }, Some("Loads tickers informations") ),
-      new Command("load\texchange", (mgr, cmd) => { println("load exchanges") }),
+      new Command("load tickers", (ctx) => { println("load tickers") }, Some("Loads tickers informations") ),
+      new Command("load\texchange", (ctx) => { println("load exchanges") }),
       //  will trim values
-      new Command("  find  \t  signals  ", (mgr, cmd) => { println("find signals") })
+      new Command("  find  \t  signals  ", (ctx) => { println("find signals") })
     ))
 
     intercept[CommandNotFoundException] {
@@ -52,6 +52,19 @@ class CommandManagerSpec extends FlatSpec with Matchers {
   }
 
   "Executing a command with arguments" should "find the correct command" in {
-    fail()
+    var called = false
+    var exchangeName: Option[String] = None
+
+    val manager = new CommandManager(Seq(
+      new Command("load tickers", (ctx) => { println("load tickers") }, Some("Loads tickers informations") ),
+      new Command("load\texchange", (ctx) => { called = true; exchangeName = ctx.args.headOption }),
+      //  will trim values
+      new Command("  find  \t  signals  ", (ctx) => { println("find signals") })
+    ))
+
+    manager.execute("load exchange NYSE")
+
+    called should be (true)
+    exchangeName should be (Some("NYSE"))
   }
 }
