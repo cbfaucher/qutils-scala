@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="qutilities-1.7-SNAPSHOT.jar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/qutilities-1.7-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
