@@ -1,11 +1,7 @@
 package com.quartz.qutils.commands
 
 /**
- * Created with IntelliJ IDEA.
- * User: Christian
- * Date: 2/23/14
- * Time: 6:12 PM
- * To change this template use File | Settings | File Templates.
+ * A key for a command, formed from trimmed keywords
  */
 case class CommandKey(keyworkChain: Seq[String]) {
 

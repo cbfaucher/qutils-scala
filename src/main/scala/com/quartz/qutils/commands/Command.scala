@@ -1,18 +1,19 @@
 package com.quartz.qutils.commands
 
 /**
- * Created with IntelliJ IDEA.
- * User: Christian
- * Date: 2/23/14
- * Time: 5:28 PM
- * To change this template use File | Settings | File Templates.
+ * A 'command' is a single- or multi-keyword linked to a behaviour, along with a description
  */
-
 trait Command extends (CommandContext => Unit) {
   def command: String
   def description: Option[String]
 }
 
+/**
+ * Companion object, for creating a command:
+ * <pre>
+ *    val cmd = Command("do this", "This is my description", ctx => { .... } )
+ * </pre>
+ */
 object Command {
 
   def apply(cmd: String, descriptionMsg: String, f: (CommandContext) => Unit): Command = new Command() {
@@ -21,6 +22,10 @@ object Command {
     def apply(ctx: CommandContext) { f(ctx) }
   }
 
+  /**
+   * A default 'help' command that either prints all available commands, with description, or
+   * the help for the specified command.
+   */
   val helpCommand = Command("help", "help [command]: Prints help on command", ctx => {
     if (ctx.args.isEmpty)
       println(ctx.manager.supportedCommands.mkString("\n"))
@@ -35,6 +40,9 @@ object Command {
       }
   })
 
+  /**
+   * Finds existing commands having the given 'tag' in their keywords.
+   */
   val findCommand = Command("find", "find [tag]: Finds command having specified tag in it.", ctx => {
     if (ctx.args.length != 1)
       println("ERROR: only one argument is expected.")
@@ -45,22 +53,29 @@ object Command {
           .supportedCommands
           .filter(_.contains(tag))
           .map(ctx.manager.getCommand)
-//          .filter(_.isDefined)
-          .flatten
-          .map(cmd => { s"""${cmd.command}: ${cmd.description}""" } )
+          .flatten                                                    //  remove the option
+          .map(cmd => { s"""${cmd.command}: ${cmd.description}""" } ) //  formats help line 'cmd: description'
           .mkString("\n")
       }
     }
   })
+
+  /**
+   * Calls <code>sys.exit(0)</code>, and thoerically, never returns...
+   */
+  val exitCommand = Command("exit", "Calls sys.exit(0)", ctx => { sys.exit(0) })
 }
 
+/**
+ * Utility main to test invokation, 'cause it hard to unit tests that.
+ */
 object CommandApp extends App {
 
   val manager = new CommandManager(Command.helpCommand, Command.findCommand)
-  manager.execute("help")
-  manager.execute("help help")
-  manager.execute("help find")
-  manager.execute("find")
-  manager.execute("find find")
-  manager.execute("not found")
+  manager("help")
+  manager("help help")
+  manager("help find")
+  manager("find")
+  manager("find find")
+  manager ("not found")
 }

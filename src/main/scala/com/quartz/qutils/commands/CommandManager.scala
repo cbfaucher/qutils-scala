@@ -3,16 +3,26 @@ package com.quartz.qutils.commands
 import CommandKey.FromString
 
 /**
- * Created with IntelliJ IDEA.
- * User: Christian
- * Date: 2/23/14
- * Time: 5:28 PM
- * To change this template use File | Settings | File Templates.
+ * The 'Command Manager' knowing all available commands.
+ * <p>
+ * [[com.quartz.qutils.commands.Command]]s are specified at construction time.
+ * <p>
+ * You can execute a command as follow: <code>manager("keyword1 keyword2 arg1 arg2")</code>
  */
 class CommandManager(commands: Command*) {
 
-  def apply(cmdLine: String) {
-    execute(cmdLine)
+  def apply(commandLine: String) {
+    val elements = commandLine.toCommandKey.keyworkChain
+
+    findCommand(CommandKey(elements)) match {
+      case Some( (key, cmd) ) => {
+        //  split args part...
+        val arguments = elements.drop(key.keyworkChain.length)
+
+        cmd.execute(arguments)
+      }
+      case None => throw new CommandNotFoundException(commandLine)
+    }
   }
 
   private[this] val commandToCommand: Map[CommandKey, CommandExecutor] = commands.map {
@@ -32,21 +42,6 @@ class CommandManager(commands: Command*) {
       .map( _.keyworkChain.mkString(" ") )
       .toSeq
       .sorted
-
-  def execute(commandLine: String) {
-
-    val elements = commandLine.toCommandKey.keyworkChain
-
-    findCommand(CommandKey(elements)) match {
-      case Some( (key, cmd) ) => {
-        //  split args part...
-        val arguments = elements.drop(key.keyworkChain.length)
-
-        cmd.execute(arguments)
-      }
-      case None => throw new CommandNotFoundException(commandLine)
-    }
-  }
 
   private[commands] def getCommand(cmdLine: String): Option[Command] = findCommand(cmdLine.toCommandKey) match {
     case Some( (key, executor) ) => Some(executor.command)
