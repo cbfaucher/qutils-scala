@@ -6,6 +6,8 @@ package com.quartz.qutils.commands
 trait Command extends (CommandContext => Unit) {
   def command: String
   def description: Option[String]
+
+  override def toString(): String = s"""$command: ${description.getOrElse("<none>")}"""
 }
 
 /**
@@ -26,14 +28,14 @@ object Command {
    * A default 'help' command that either prints all available commands, with description, or
    * the help for the specified command.
    */
-  val helpCommand = Command("help", "help [command]: Prints help on command", ctx => {
+  val helpCommand = Command("help", "[command]: Prints help on command", ctx => {
     if (ctx.args.isEmpty)
       println(ctx.manager.supportedCommands.mkString("\n"))
     else
       ctx.args.foreach {
         cmd => {
           ctx.manager.getCommand(cmd) match {
-            case Some(command) => println(s"${command.command}: ${command.description.getOrElse("<none>")}")
+            case Some(command) => println(command.toString())
             case None => println(s"ERROR: No command found for '$cmd'")
           }
         }
@@ -43,7 +45,7 @@ object Command {
   /**
    * Finds existing commands having the given 'tag' in their keywords.
    */
-  val findCommand = Command("find", "find [tag]: Finds command having specified tag in it.", ctx => {
+  val findCommand = Command("find", "[tag]: Finds command having specified tag in it.", ctx => {
     if (ctx.args.length != 1)
       println("ERROR: only one argument is expected.")
     else {
@@ -54,7 +56,7 @@ object Command {
           .filter(_.contains(tag))
           .map(ctx.manager.getCommand)
           .flatten                                                    //  remove the option
-          .map(cmd => { s"""${cmd.command}: ${cmd.description}""" } ) //  formats help line 'cmd: description'
+          .map( _.toString() ) //  formats help line 'cmd: description'
           .mkString("\n")
       }
     }
