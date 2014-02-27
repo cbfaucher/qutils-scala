@@ -2,65 +2,78 @@ package com.quartz.qutils.commands
 
 import org.scalatest.{FlatSpec, Matchers}
 
-/**
- * Created with IntelliJ IDEA.
- * User: Christian
- * Date: 2/23/14
- * Time: 5:41 PM
- * To change this template use File | Settings | File Templates.
- */
 class CommandManagerSpec extends FlatSpec with Matchers {
 
-  it should "return the expected commands" in {
-    val manager = new CommandManager(Seq(
-      new Command("load tickers", (ctx) => { println("load tickers") }, Some("Loads tickers informations") ),
-      new Command("load\texchange", (ctx) => { println("load exchanges") }),
-      //  will trim values
-      new Command("  find  \t  signals  ", (ctx) => { println("find signals") })
-    ))
+  class Fixture {
+    val loadTickersCmd = Command("load tickers", "Load tickers information", ctx => {println("load tickers")})
+    val loadExchangeCmd = Command("load\texchange", null, ctx => { println("load exchanges") })
+    val findSignalsCmd = Command("  find  \t  signals  ", null, ctx => { println("find signals") })
 
-    manager.supportedCommands should be( Seq("find signals", "load exchange", "load tickers"))
+    val defaultManager = new CommandManager( loadTickersCmd, Command.helpCommand, loadExchangeCmd, findSignalsCmd )
   }
 
-  "Executing an existing command" should "execute the so-mentioned command (no args)" in {
+  it should "return the expected commands" in new Fixture {
+
+    defaultManager.supportedCommands should be( Seq("find signals", "help", "load exchange", "load tickers"))
+  }
+
+  "Executing an existing single word command" should "execute the so-mentioned command (no args)" in new Fixture {
+    var marker: Option[String] = None
+
+    val manager = new CommandManager(
+      loadTickersCmd,
+      Command("help", "", ctx => { marker = Some("'help' called!") } ),
+      findSignalsCmd
+    )
+
+    manager.execute("help")
+
+    marker should be (Some("'help' called!"))
+  }
+
+  "Executing an existing single word command" should "execute the so-mentioned command (with args)" in new Fixture {
+    var marker: Option[String] = None
+
+    val manager = new CommandManager(
+      loadTickersCmd,
+      Command("help", "", ctx => { marker = Some(s"""'help' called with arguments ${ctx.args.mkString(" ")}!""") } ),
+      findSignalsCmd
+    )
+
+    manager.execute("help arg1 arg2")
+
+    marker should be (Some("'help' called with arguments arg1 arg2!"))
+  }
+
+  "Executing an existing multi-words command" should "execute the so-mentioned command (no args)" in new Fixture {
 
     var marker: Option[String] = None
 
-    val manager = new CommandManager(Seq(
-      new Command("load tickers", (ctx) => sys.error("No call expected"), Some("Loads tickers informations") ),
-      new Command("load\texchange", (ctx) => { marker = Some("Called!") }  ),
-      //  will trim values
-      new Command("  find  \t  signals  ", (ctx) => sys.error("No call expected") )
-    ))
+    val manager = new CommandManager(
+      loadTickersCmd,
+      findSignalsCmd,
+      Command("load\texchange", "", ctx => { marker = Some("CALLED!") }))
 
     manager.execute("load exchange")
 
-    marker should be ( Some("Called!") )
+    marker should be ( Some("CALLED!") )
   }
 
-  "Executing a non existing command" should "throw an exception" in {
-    val manager = new CommandManager(Seq(
-      new Command("load tickers", (ctx) => { println("load tickers") }, Some("Loads tickers informations") ),
-      new Command("load\texchange", (ctx) => { println("load exchanges") }),
-      //  will trim values
-      new Command("  find  \t  signals  ", (ctx) => { println("find signals") })
-    ))
+  "Executing a non existing command" should "throw an exception" in new Fixture {
 
     intercept[CommandNotFoundException] {
-      manager.execute("command not found")
+      defaultManager.execute("command not found")
     }
   }
 
-  "Executing a command with arguments" should "find the correct command" in {
+  "Executing a command with arguments" should "find the correct command" in new Fixture {
     var called = false
     var exchangeName: Option[String] = None
 
-    val manager = new CommandManager(Seq(
-      new Command("load tickers", (ctx) => { println("load tickers") }, Some("Loads tickers informations") ),
-      new Command("load\texchange", (ctx) => { called = true; exchangeName = ctx.args.headOption }),
-      //  will trim values
-      new Command("  find  \t  signals  ", (ctx) => { println("find signals") })
-    ))
+    val manager = new CommandManager(
+      loadTickersCmd, findSignalsCmd,
+      Command("load\texchange", "", ctx => { called = true; exchangeName = ctx.args.headOption } )
+    )
 
     manager.execute("load exchange NYSE")
 

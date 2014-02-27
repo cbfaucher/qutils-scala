@@ -9,7 +9,11 @@ import CommandKey.FromString
  * Time: 5:28 PM
  * To change this template use File | Settings | File Templates.
  */
-class CommandManager(commands: Seq[Command]) {
+class CommandManager(commands: Command*) {
+
+  def apply(cmdLine: String) {
+    execute(cmdLine)
+  }
 
   private[this] val commandToCommand: Map[CommandKey, CommandExecutor] = commands.map {
       cmd => (cmd.command, cmd)
@@ -19,6 +23,9 @@ class CommandManager(commands: Seq[Command]) {
     }
     .toMap
 
+  /**
+   * @return Supported commands, sorted by alphabetical order
+   */
   def supportedCommands: Seq[String] =
     commandToCommand
       .keySet
@@ -41,15 +48,20 @@ class CommandManager(commands: Seq[Command]) {
     }
   }
 
+  private[commands] def getCommand(cmdLine: String): Option[Command] = findCommand(cmdLine.toCommandKey) match {
+    case Some( (key, executor) ) => Some(executor.command)
+    case None => None
+  }
+
   private[this] def findCommand(key: CommandKey): Option[(CommandKey, CommandExecutor)] = commandToCommand.get(key) match {
     case Some(cmd) => Some( (key, cmd) )
-    case None => if (key.keyworkChain.length > 2) findCommand(key.shift) else None
+    case None => if (key.keyworkChain.length > 1) findCommand(key.shift) else None
   }
 }
 
 private class CommandExecutor(val commandManager: CommandManager, val command: Command) {
   def execute(arguments: Seq[String]) {
-    command.action(CommandContext(commandManager, command, arguments))
+    command(CommandContext(commandManager, command, arguments))
   }
 }
 
