@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT menu-bar (menu)*>
+
+<!ELEMENT menu (menu|menu-item|checkbox-menu-item|radio-menu-item|menu-separator)*>
+<!ATTLIST menu label       CDATA #REQUIRED>
+<!ATTLIST menu mnemonic    CDATA #IMPLIED>
+<!ATTLIST menu class-name  CDATA #IMPLIED>
+
+<!ELEMENT menu-item EMPTY>
+<!ATTLIST menu-item label           CDATA #REQUIRED>
+<!ATTLIST menu-item mnemonic        CDATA #IMPLIED>
+<!ATTLIST menu-item action-class    CDATA #IMPLIED>
+<!ATTLIST menu-item command         CDATA #IMPLIED>
+<!ATTLIST menu-item accelerator     CDATA #IMPLIED>
+
+
+<!ELEMENT checkbox-menu-item EMPTY>
+<!ATTLIST checkbox-menu-item label           CDATA #REQUIRED>
+<!ATTLIST checkbox-menu-item mnemonic        CDATA #IMPLIED>
+<!ATTLIST checkbox-menu-item action-class    CDATA #IMPLIED>
+<!ATTLIST checkbox-menu-item command         CDATA #IMPLIED>
+<!ATTLIST checkbox-menu-item accelerator     CDATA #IMPLIED>
+<!-- 'true' or 'false' -->
+<!ATTLIST checkbox-menu-item state          CDATA #IMPLIED>
+
+<!ELEMENT radio-menu-item EMPTY>
+<!ATTLIST radio-menu-item label             CDATA #REQUIRED>
+<!ATTLIST radio-menu-item button-group-name CDATA #REQUIRED>
+<!ATTLIST radio-menu-item mnemonic          CDATA #IMPLIED>
+<!ATTLIST radio-menu-item action-class      CDATA #IMPLIED>
+<!ATTLIST radio-menu-item accelerator       CDATA #IMPLIED>
+<!ATTLIST radio-menu-item command           CDATA #IMPLIED>
+
+<!ELEMENT menu-separator EMPTY>
