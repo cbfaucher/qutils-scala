@@ -26,7 +26,7 @@ class CommandManagerSpec extends FlatSpec with Matchers {
       findSignalsCmd
     )
 
-    manager.execute("help")
+    manager("help")
 
     marker should be (Some("'help' called!"))
   }
@@ -40,7 +40,7 @@ class CommandManagerSpec extends FlatSpec with Matchers {
       findSignalsCmd
     )
 
-    manager.execute("help arg1 arg2")
+    manager("help arg1 arg2")
 
     marker should be (Some("'help' called with arguments arg1 arg2!"))
   }
@@ -54,7 +54,7 @@ class CommandManagerSpec extends FlatSpec with Matchers {
       findSignalsCmd,
       Command("load\texchange", "", ctx => { marker = Some("CALLED!") }))
 
-    manager.execute("load exchange")
+    manager("load exchange")
 
     marker should be ( Some("CALLED!") )
   }
@@ -62,7 +62,7 @@ class CommandManagerSpec extends FlatSpec with Matchers {
   "Executing a non existing command" should "throw an exception" in new Fixture {
 
     intercept[CommandNotFoundException] {
-      defaultManager.execute("command not found")
+      defaultManager("command not found")
     }
   }
 
@@ -75,7 +75,7 @@ class CommandManagerSpec extends FlatSpec with Matchers {
       Command("load\texchange", "", ctx => { called = true; exchangeName = ctx.args.headOption } )
     )
 
-    manager.execute("load exchange NYSE")
+    manager("load exchange NYSE")
 
     called should be (true)
     exchangeName should be (Some("NYSE"))
