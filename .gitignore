@@ -15,4 +15,3 @@ project/plugins.sbt.bug
 .scala_dependencies
 .idea/libraries
 .idea/workspace.xml
-.idea/libraries/*
