@@ -1,0 +1,96 @@
+<!DOCTYPE digester-rules PUBLIC
+   "-//Jakarta Apache //DTD digester-rules XML V1.0//EN"
+   "http://jakarta.apache.org/commons/digester/dtds/digester-rules.dtd">
+
+<digester-rules>
+    <pattern value="menu-bar">
+        <object-create-rule classname="com.quartz.qutilities.swing.menus.XmlMenuBar"/>
+    </pattern>
+
+        <pattern value="*/menu">
+            <factory-create-rule    classname="com.quartz.qutilities.swing.menus.digester.XmlMenuFactory"/>
+<!--            <object-create-rule classname="com.axacanada.common.util.swing.menus.XmlMenu"/>-->
+
+            <call-method-rule methodname="setText" paramcount="1"/>
+            <call-param-rule paramnumber="0" attrname="label"/>
+
+            <call-method-rule methodname="setMnemonic" paramcount="1"/>
+            <call-param-rule paramnumber="0" attrname="mnemonic"/>
+
+            <set-next-rule methodname="add" paramtype="com.quartz.qutilities.swing.menus.XmlMenu" />
+
+            <pattern value="menu-item">
+                <object-create-rule classname="com.quartz.qutilities.swing.menus.XmlMenuItem"/>
+
+                <call-method-rule methodname="setText" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="label"/>
+
+                <call-method-rule methodname="setMnemonic" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="mnemonic"/>
+
+                <call-method-rule methodname="setActionCommand" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="command"/>
+
+                <call-method-rule methodname="setActionListener" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="action-class"/>
+
+                <call-method-rule methodname="setAccelerator" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="accelerator"/>
+
+                <set-next-rule methodname="add" paramtype="com.quartz.qutilities.swing.menus.AbstractXmlMenuItem" />
+            </pattern>
+
+            <pattern value="checkbox-menu-item">
+                <object-create-rule classname="com.quartz.qutilities.swing.menus.XmlCheckboxMenuItem"/>
+
+                <call-method-rule methodname="setText" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="label"/>
+
+                <call-method-rule methodname="setMnemonic" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="mnemonic"/>
+
+                <call-method-rule methodname="setActionCommand" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="command"/>
+
+                <call-method-rule methodname="setActionClass" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="action-class"/>
+
+                <call-method-rule methodname="setState" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="state"/>
+
+                <call-method-rule methodname="setAccelerator" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="accelerator"/>
+
+                <set-next-rule methodname="add" paramtype="com.quartz.qutilities.swing.menus.AbstractXmlMenuItem" />
+            </pattern>
+
+            <pattern value="radio-menu-item">
+                <object-create-rule classname="com.quartz.qutilities.swing.menus.XmlRadioMenuItem"/>
+
+                <call-method-rule methodname="setText" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="label"/>
+
+                <call-method-rule methodname="setMnemonic" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="mnemonic"/>
+
+                <call-method-rule methodname="setActionCommand" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="command"/>
+
+                <call-method-rule methodname="setActionClass" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="action-class"/>
+
+                <call-method-rule methodname="setButtonGroupName" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="button-group-name"/>
+
+                <call-method-rule methodname="setAccelerator" paramcount="1"/>
+                <call-param-rule paramnumber="0" attrname="accelerator"/>
+
+                <set-next-rule methodname="add" paramtype="com.quartz.qutilities.swing.menus.AbstractXmlMenuItem" />
+            </pattern>
+
+            <pattern value="menu-separator">
+                <call-method-rule methodname="addSeparator"/>
+            </pattern>
+        </pattern>
+<!--    </pattern>-->
+</digester-rules>

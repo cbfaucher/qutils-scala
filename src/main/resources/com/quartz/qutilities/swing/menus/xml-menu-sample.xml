@@ -1,0 +1,22 @@
+<!DOCTYPE menu-bar SYSTEM "http://www.axa.ca/dtd/xml-menu-bar.dtd">
+
+<menu-bar>
+
+    <menu   label="Menu 1" mnemonic="1">
+
+        <menu-item  label="Open" mnemonic="O" command="blah" key-stroke="ctrl G" />
+        <menu-item  label="Save" mnemonic="S"/>
+        <menu-separator/>
+        <menu-item  label="Close" mnemonic="C" action-class="com.axacanada.common.util.swing.menus.EmptyActionListener"/>
+        
+    </menu>
+
+    <menu   label="Menu 2" mnemonic="2">
+
+        <menu-item  label="Find" mnemonic="F"/>
+        <menu-item  label="Replace" mnemonic="R"/>
+        <checkbox-menu-item label="Check-Item" state="true"   />
+        <radio-menu-item label="Single Choice" command="BLAH" action-class="com.axacanada.common.util.swing.menus.EmptyActionListener" group-name="THE-GROUP" mnemonic="A"/>
+    </menu>
+
+</menu-bar>
